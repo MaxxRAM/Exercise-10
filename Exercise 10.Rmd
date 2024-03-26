@@ -1,0 +1,76 @@
+---
+title: "Exercise 10"
+author: "Maxximus Ramsaroop"
+date: "2024-03-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(infer)
+library(broom)
+library(radiant)
+library(mosaic)
+```
+
+Step 1: Load in KamilarandCooper
+```{r}
+f<- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/KamilarAndCooperData.csv"
+d<- read_csv(file = f, col_names = T)
+```
+
+Step 2: Plot Lifespan VS F Body Mass
+```{r}
+p1<- plot(d$MaxLongevity_m ~ d$Body_mass_female_mean)
+p2<- plot(d$MaxLongevity_m ~ log(d$Body_mass_female_mean))
+p3<- plot(log(d$MaxLongevity_m) ~ log(d$Body_mass_female_mean))
+```
+
+Step 3: Run Linear Models
+```{r}
+lm1<- lm(d$MaxLongevity_m ~ d$Body_mass_female_mean)
+
+lm2<- lm(d$MaxLongevity_m ~ log(d$Body_mass_female_mean))
+
+lm3<- lm(log(d$MaxLongevity_m) ~ log(d$Body_mass_female_mean))
+```
+
+Step 4: Plot residuals against explanatory var. & plot hist.
+```{r}
+lm1res<- resid(lm1)
+lm2res<- resid(lm2)
+lm3res<- resid(lm3)
+histogram(lm1res)
+histogram(lm2res)
+histogram(lm3res)
+# histograms of residuals become progressively more normalized as the graph becomes more logged because the graph becomes more linear.
+
+plot(x = lm1$model$`d$Body_mass_female_mean`, y = lm1res)
+plot(x = lm2$model$`log(d$Body_mass_female_mean)` , y = lm2res)
+plot(x = lm3$model$`log(d$Body_mass_female_mean)` , y = lm3res)
+# plot of residuals against explanatory variable becomes more homoscadastic
+```
+
+Step 5: Generate QQ plot for all 3 lm()
+```{r}
+qqplot(d$MaxLongevity_m, d$Body_mass_female_mean)
+qqplot(d$MaxLongevity_m, log(d$Body_mass_female_mean))
+qqplot(log(d$MaxLongevity_m), log(d$Body_mass_female_mean))
+# QQ plot becomes more linear as graph is logged 
+```
+
+Step 6: Plot all 3 lm() and inspect resultant plots
+```{r}
+plot1<- plot(lm1)
+plot2<- plot(lm2)
+plot<- plot(lm3)
+```
+
+Step 7: Shapiro-Wilks tests
+```{r}
+shapiro.test(lm1res)
+shapiro.test(lm2res)
+shapiro.test(lm3res)
+```
+
